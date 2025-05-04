@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Brain Hope</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold">Brain Hope</h3>
+                    <p class="small">Admin Dashboard</p>
+                </div>
+                <hr>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="users.html">
+                            <i class="fas fa-users"></i> Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="create-user.html">
+                            <i class="fas fa-user-plus"></i> Create User
+                        </a>
+                    </li>
+                    <li class="nav-item mt-5">
+                        <a class="nav-link text-danger" href="#" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Main content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="mb-1"><i class="fas fa-tachometer-alt text-primary me-2"></i>Dashboard</h2>
+                        <p class="text-muted mb-0">Welcome to Brain Hope Admin Dashboard</p>
+                    </div>
+                    <div class="user-info d-flex align-items-center">
+                        <div class="avatar-circle bg-primary text-white me-2">
+                            <span id="userInitial">A</span>
+                        </div>
+                        <span id="username" class="fw-bold">Admin</span>
+                    </div>
+                </div>
+
+                <!-- Dashboard cards -->
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="card dashboard-card bg-gradient bg-primary text-white border-0">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <p class="card-subtitle mb-1 opacity-75">Total Users</p>
+                                        <h2 id="totalUsers" class="display-5 fw-bold mb-0">0</h2>
+                                        <p class="mt-2 mb-0">
+                                            <a href="users.html" class="text-white text-decoration-none">
+                                                <small>View all <i class="fas fa-arrow-right ms-1"></i></small>
+                                            </a>
+                                        </p>
+                                    </div>
+                                    <div class="icon-circle bg-white bg-opacity-25 text-white">
+                                        <i class="fas fa-users fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card dashboard-card bg-gradient bg-success text-white border-0">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <p class="card-subtitle mb-1 opacity-75">Doctors</p>
+                                        <h2 id="totalDoctors" class="display-5 fw-bold mb-0">0</h2>
+                                        <p class="mt-2 mb-0">
+                                            <a href="users.html?role=Doctor" class="text-white text-decoration-none">
+                                                <small>View doctors <i class="fas fa-arrow-right ms-1"></i></small>
+                                            </a>
+                                        </p>
+                                    </div>
+                                    <div class="icon-circle bg-white bg-opacity-25 text-white">
+                                        <i class="fas fa-user-md fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card dashboard-card bg-gradient bg-info text-white border-0">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <p class="card-subtitle mb-1 opacity-75">Patients</p>
+                                        <h2 id="totalPatients" class="display-5 fw-bold mb-0">0</h2>
+                                        <p class="mt-2 mb-0">
+                                            <a href="users.html?role=Patient" class="text-white text-decoration-none">
+                                                <small>View patients <i class="fas fa-arrow-right ms-1"></i></small>
+                                            </a>
+                                        </p>
+                                    </div>
+                                    <div class="icon-circle bg-white bg-opacity-25 text-white">
+                                        <i class="fas fa-hospital-user fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent users table -->
+                <div class="table-container">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h4 class="mb-1"><i class="fas fa-history text-primary me-2"></i>Recent Users</h4>
+                            <p class="text-muted mb-0 small">Latest registered users in the system</p>
+                        </div>
+                        <a href="users.html" class="btn btn-sm btn-primary">
+                            <i class="fas fa-users me-1"></i> View All Users
+                        </a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>National ID</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentUsersTable">
+                                <!-- User data will be loaded here -->
+                                <tr>
+                                    <td colspan="4" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2 text-muted">Loading users...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

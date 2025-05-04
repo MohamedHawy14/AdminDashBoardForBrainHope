@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Status Check - Brain Hope</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .status-card {
+            margin-bottom: 20px;
+        }
+        .endpoint-status {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .status-pending {
+            background-color: #f8f9fa;
+        }
+        .status-success {
+            background-color: #d1e7dd;
+        }
+        .status-error {
+            background-color: #f8d7da;
+        }
+        .status-warning {
+            background-color: #fff3cd;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Brain Hope API Status Check</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <h5>API Base URL</h5>
+                            <div class="input-group mb-3">
+                                <input type="text" id="apiBaseUrl" class="form-control" placeholder="API Base URL">
+                                <button class="btn btn-outline-primary" type="button" id="updateUrlBtn">Update</button>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="useHttpsSwitch">
+                                <label class="form-check-label" for="useHttpsSwitch">Use HTTPS</label>
+                            </div>
+                        </div>
+
+                        <div id="statusContainer">
+                            <!-- Status cards will be added here -->
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button id="checkAllBtn" class="btn btn-primary">Check All Endpoints</button>
+                            <a href="login.html" class="btn btn-outline-secondary">Back to Login</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const apiBaseUrlInput = document.getElementById('apiBaseUrl');
+            const useHttpsSwitch = document.getElementById('useHttpsSwitch');
+            const updateUrlBtn = document.getElementById('updateUrlBtn');
+            const checkAllBtn = document.getElementById('checkAllBtn');
+            const statusContainer = document.getElementById('statusContainer');
+
+            // Initialize with current API base URL
+            let currentApiBaseUrl = localStorage.getItem('tempApiBaseUrl') || API_BASE_URL;
+            apiBaseUrlInput.value = currentApiBaseUrl;
+            useHttpsSwitch.checked = currentApiBaseUrl.startsWith('https://');
+
+            // Update URL when button is clicked
+            updateUrlBtn.addEventListener('click', function() {
+                let newUrl = apiBaseUrlInput.value.trim();
+
+                // Ensure URL has protocol
+                if (!newUrl.startsWith('http://') && !newUrl.startsWith('https://')) {
+                    newUrl = useHttpsSwitch.checked ? 'https://' + newUrl : 'http://' + newUrl;
+                }
+
+                // Update the URL
+                currentApiBaseUrl = newUrl;
+                apiBaseUrlInput.value = newUrl;
+
+                // Save to localStorage
+                localStorage.setItem('tempApiBaseUrl', newUrl);
+
+                // Update the status display
+                createStatusCards();
+            });
+
+            // Toggle between HTTP and HTTPS
+            useHttpsSwitch.addEventListener('change', function() {
+                let newUrl = apiBaseUrlInput.value.trim();
+
+                // Remove any existing protocol
+                if (newUrl.startsWith('http://')) {
+                    newUrl = newUrl.substring(7);
+                } else if (newUrl.startsWith('https://')) {
+                    newUrl = newUrl.substring(8);
+                }
+
+                // Add the selected protocol
+                newUrl = useHttpsSwitch.checked ? 'https://' + newUrl : 'http://' + newUrl;
+
+                // Update the input
+                apiBaseUrlInput.value = newUrl;
+            });
+
+            // Create status cards for each endpoint
+            function createStatusCards() {
+                statusContainer.innerHTML = '';
+
+                // Create a card for the base URL
+                const baseUrlCard = document.createElement('div');
+                baseUrlCard.className = 'status-card';
+                baseUrlCard.innerHTML = `
+                    <h5>Base URL</h5>
+                    <div id="baseUrlStatus" class="endpoint-status status-pending">
+                        <div class="d-flex justify-content-between">
+                            <span>${currentApiBaseUrl}</span>
+                            <button class="btn btn-sm btn-outline-primary check-btn" data-url="${currentApiBaseUrl}">Check</button>
+                        </div>
+                        <div class="status-result mt-2"></div>
+                    </div>
+                `;
+                statusContainer.appendChild(baseUrlCard);
+
+                // Create cards for each API endpoint
+                const endpoints = {
+                    'Login': `${currentApiBaseUrl}/Account/Account/LogIn`,
+                    'Get All Users': `${currentApiBaseUrl}/Admin/Admin/GetAllUsers`,
+                    'Create User': `${currentApiBaseUrl}/Admin/Admin/CreateUserWithRole`,
+                    'Assign Role': `${currentApiBaseUrl}/Admin/Admin/AssignRoleToUser`
+                };
+
+                const endpointsCard = document.createElement('div');
+                endpointsCard.className = 'status-card';
+                endpointsCard.innerHTML = '<h5>API Endpoints</h5>';
+
+                for (const [name, url] of Object.entries(endpoints)) {
+                    const endpointStatus = document.createElement('div');
+                    endpointStatus.className = 'endpoint-status status-pending';
+                    endpointStatus.id = `endpoint-${name.replace(/\s+/g, '-').toLowerCase()}`;
+                    endpointStatus.innerHTML = `
+                        <div class="d-flex justify-content-between">
+                            <span>${name}</span>
+                            <button class="btn btn-sm btn-outline-primary check-btn" data-url="${url}">Check</button>
+                        </div>
+                        <div class="small text-muted">${url}</div>
+                        <div class="status-result mt-2"></div>
+                    `;
+                    endpointsCard.appendChild(endpointStatus);
+                }
+
+                statusContainer.appendChild(endpointsCard);
+
+                // Add event listeners to check buttons
+                document.querySelectorAll('.check-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const url = this.getAttribute('data-url');
+                        const statusElement = this.closest('.endpoint-status');
+                        const resultElement = statusElement.querySelector('.status-result');
+
+                        checkEndpoint(url, statusElement, resultElement);
+                    });
+                });
+            }
+
+            // Check a single endpoint
+            async function checkEndpoint(url, statusElement, resultElement) {
+                statusElement.className = 'endpoint-status status-pending';
+                resultElement.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Checking...';
+
+                try {
+                    const startTime = performance.now();
+                    let response;
+
+                    // Special handling for login endpoint - use POST with dummy data
+                    if (url.includes('/Account/Account/LogIn')) {
+                        // Try with FormData (based on successful curl request)
+                        const formData = new FormData();
+                        formData.append('Email', 'test@example.com'); // Note: Capital 'E' in Email
+                        formData.append('Password', 'password123'); // Note: Capital 'P' in Password
+
+                        response = await fetch(url, {
+                            method: 'POST',
+                            body: formData,
+                            mode: 'cors',
+                            cache: 'no-cache',
+                            credentials: 'omit',
+                            signal: AbortSignal.timeout(5000),
+                            headers: {
+                                'Accept': '*/*'
+                            }
+                        });
+                    // Special handling for Create User endpoint
+                    } else if (url.includes('/Admin/Admin/CreateUserWithRole')) {
+                        // Try with FormData
+                        const createUserData = new FormData();
+                        createUserData.append('Email', 'test@example.com');
+                        createUserData.append('Password', 'Password123!');
+                        createUserData.append('FirstName', 'Test');
+                        createUserData.append('LastName', 'User');
+                        createUserData.append('RoleId', '2'); // Assuming 2 is a valid role ID
+
+                        response = await fetch(url, {
+                            method: 'POST',
+                            body: createUserData,
+                            mode: 'cors',
+                            cache: 'no-cache',
+                            credentials: 'omit',
+                            signal: AbortSignal.timeout(5000),
+                            headers: {
+                                'Accept': '*/*'
+                            }
+                        });
+                    // Special handling for Assign Role endpoint
+                    } else if (url.includes('/Admin/Admin/AssignRoleToUser')) {
+                        // Try with FormData
+                        const assignRoleData = new FormData();
+                        assignRoleData.append('UserId', '1'); // Assuming 1 is a valid user ID
+                        assignRoleData.append('RoleId', '2'); // Assuming 2 is a valid role ID
+
+                        response = await fetch(url, {
+                            method: 'POST',
+                            body: assignRoleData,
+                            mode: 'cors',
+                            cache: 'no-cache',
+                            credentials: 'omit',
+                            signal: AbortSignal.timeout(5000),
+                            headers: {
+                                'Accept': '*/*'
+                            }
+                        });
+                    } else {
+                        // For other endpoints, use GET
+                        response = await fetch(url, {
+                            method: 'GET',
+                            mode: 'cors',
+                            cache: 'no-cache',
+                            credentials: 'omit',
+                            signal: AbortSignal.timeout(5000)
+                        });
+                    }
+
+                    const endTime = performance.now();
+                    const responseTime = Math.round(endTime - startTime);
+
+                    // For login endpoint, 401 is actually a good sign (means auth failed but endpoint works)
+                    const isLoginEndpoint = url.includes('/Account/Account/LogIn');
+                    const isSuccessful = response.ok || (isLoginEndpoint && response.status === 401);
+
+                    if (isSuccessful) {
+                        statusElement.className = 'endpoint-status status-success';
+                        let statusText = response.status === 401 && isLoginEndpoint ?
+                            'Unauthorized (expected for dummy credentials)' : response.statusText;
+
+                        resultElement.innerHTML = `
+                            <div class="text-success">
+                                <strong>Status:</strong> ${response.status} ${statusText}<br>
+                                <strong>Response time:</strong> ${responseTime}ms
+                            </div>
+                        `;
+                    } else {
+                        statusElement.className = 'endpoint-status status-warning';
+                        resultElement.innerHTML = `
+                            <div class="text-warning">
+                                <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+                                <strong>Response time:</strong> ${responseTime}ms
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    statusElement.className = 'endpoint-status status-error';
+                    let errorMessage = 'Unknown error';
+
+                    if (error.name === 'AbortError') {
+                        errorMessage = 'Connection timed out (>5s)';
+                    } else if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                        errorMessage = 'Failed to fetch. Network error or CORS issue.';
+                    } else {
+                        errorMessage = error.message;
+                    }
+
+                    resultElement.innerHTML = `
+                        <div class="text-danger">
+                            <strong>Error:</strong> ${errorMessage}
+                        </div>
+                    `;
+                }
+            }
+
+            // Check all endpoints
+            checkAllBtn.addEventListener('click', function() {
+                document.querySelectorAll('.check-btn').forEach(button => {
+                    button.click();
+                });
+            });
+
+            // Initialize the status cards
+            createStatusCards();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create User - Brain Hope Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold">Brain Hope</h3>
+                    <p class="small">Admin Dashboard</p>
+                </div>
+                <hr>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="users.html">
+                            <i class="fas fa-users"></i> Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="create-user.html">
+                            <i class="fas fa-user-plus"></i> Create User
+                        </a>
+                    </li>
+                    <li class="nav-item mt-5">
+                        <a class="nav-link text-danger" href="#" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Main content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="mb-1"><i class="fas fa-user-plus text-primary me-2"></i>Create New User</h2>
+                        <p class="text-muted mb-0">Add a new user to the system</p>
+                    </div>
+                    <a href="users.html" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Users
+                    </a>
+                </div>
+
+                <!-- Create user form -->
+                <div class="form-container">
+                    <div id="createUserAlert" class="alert d-none" role="alert"></div>
+
+                    <form id="createUserForm" class="needs-validation" novalidate>
+                        <div class="card mb-4 border-0 shadow-sm">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-user me-2"></i>User Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="userName" class="form-label">Username <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                            <input type="text" class="form-control" id="userName" name="userName" placeholder="Enter username" required>
+                                        </div>
+                                        <div class="invalid-feedback">Please enter a username</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email address" required>
+                                        </div>
+                                        <div class="invalid-feedback">Please enter a valid email address</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4 border-0 shadow-sm">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-lock me-2"></i>Security</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+                                        </div>
+                                        <div class="form-text">Password must be at least 8 characters long.</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="confirmPassword" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required>
+                                        </div>
+                                        <div class="invalid-feedback">Passwords do not match</div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="nationalId" class="form-label">National ID (14 digits) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                        <input type="text" class="form-control" id="nationalId" name="nationalId" pattern="[0-9]{14}" placeholder="Enter 14-digit national ID" required>
+                                    </div>
+                                    <div class="form-text">National ID must be exactly 14 digits.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4 border-0 shadow-sm">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-user-tag me-2"></i>Roles & Profile</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <label class="form-label d-block">User Roles <span class="text-danger">*</span></label>
+                                    <div class="d-flex flex-wrap gap-3">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" value="Admin" id="roleAdmin" name="roles">
+                                            <label class="form-check-label" for="roleAdmin">
+                                                <i class="fas fa-user-cog text-danger me-1"></i> Admin
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" value="Doctor" id="roleDoctor" name="roles">
+                                            <label class="form-check-label" for="roleDoctor">
+                                                <i class="fas fa-user-md text-success me-1"></i> Doctor
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" value="Patient" id="rolePatient" name="roles">
+                                            <label class="form-check-label" for="rolePatient">
+                                                <i class="fas fa-user text-primary me-1"></i> Patient
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-text">Select at least one role for the user.</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="profilePhoto" class="form-label">Profile Photo (Optional)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-camera"></i></span>
+                                        <input type="file" class="form-control" id="profilePhoto" name="profilePhoto" accept="image/*">
+                                    </div>
+                                    <div class="form-text">Upload a profile photo (JPG, PNG, or GIF).</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-user-plus me-2"></i> Create User
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/create-user.js"></script>
+</body>
+</html>

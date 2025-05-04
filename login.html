@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Brain Hope</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .login-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .login-header {
+            background-color: #0d6efd;
+            padding: 2rem;
+            color: white;
+            text-align: center;
+        }
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .login-logo i {
+            font-size: 2.5rem;
+            color: #0d6efd;
+        }
+        .login-form {
+            padding: 2rem;
+        }
+        .form-floating {
+            margin-bottom: 1.5rem;
+        }
+        .btn-login {
+            padding: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-5">
+                    <div class="login-card">
+                        <div class="login-header">
+                            <div class="login-logo">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <h2 class="fw-bold mb-1">Brain Hope</h2>
+                            <p class="mb-0">Admin Dashboard</p>
+                        </div>
+
+                        <div class="login-form">
+                            <div id="loginAlert" class="alert alert-danger d-none" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                Invalid credentials. Please try again.
+                            </div>
+
+                            <!-- Connection status indicator -->
+                            <div id="connectionStatus" class="text-center mb-3 small text-muted">
+                                <i class="fas fa-spinner fa-spin me-2"></i>
+                                Checking connection...
+                            </div>
+
+                            <!-- Troubleshooting options -->
+                            <div id="troubleshootingOptions" class="text-center mb-3 d-none">
+                                <button id="toggleProtocol" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-exchange-alt me-1"></i> Try HTTP/HTTPS
+                                </button>
+                                <button id="clearCache" class="btn btn-sm btn-outline-secondary ms-2">
+                                    <i class="fas fa-broom me-1"></i> Clear Cache
+                                </button>
+                                <a href="api-status.html" class="btn btn-sm btn-outline-info ms-2">
+                                    <i class="fas fa-server me-1"></i> Check API Status
+                                </a>
+                            </div>
+
+                            <form id="loginForm">
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+                                    <label for="email"><i class="fas fa-envelope me-2"></i>Email address</label>
+                                </div>
+                                <div class="form-floating mb-4">
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                                    <label for="password"><i class="fas fa-lock me-2"></i>Password</label>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-login">
+                                        <i class="fas fa-sign-in-alt me-2"></i> Login
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Check API connection when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const connectionStatus = document.getElementById('connectionStatus');
+            const troubleshootingOptions = document.getElementById('troubleshootingOptions');
+            const toggleProtocolBtn = document.getElementById('toggleProtocol');
+            const clearCacheBtn = document.getElementById('clearCache');
+
+            // Simple function to check if the API is reachable
+            async function checkApiConnection() {
+                try {
+                    // Show that we're checking the connection
+                    connectionStatus.textContent = 'Checking connection to: ' + API_BASE_URL;
+                    connectionStatus.className = 'text-center mb-3 small text-muted';
+
+                    console.log('Checking connection to:', API_BASE_URL);
+
+                    const response = await fetch(API_BASE_URL, {
+                        method: 'GET',  // Changed from HEAD to GET
+                        mode: 'cors',
+                        cache: 'no-cache',
+                        credentials: 'omit',
+                        // Set a timeout to avoid waiting too long
+                        signal: AbortSignal.timeout(5000)
+                    });
+
+                    if (response.ok) {
+                        connectionStatus.textContent = 'Connected to server';
+                        connectionStatus.className = 'text-center mb-3 small text-success';
+                    } else {
+                        connectionStatus.textContent = 'Server reachable but returned error: ' + response.status;
+                        connectionStatus.className = 'text-center mb-3 small text-warning';
+                        // Show troubleshooting options
+                        troubleshootingOptions.classList.remove('d-none');
+                    }
+                } catch (error) {
+                    console.error('API connection error:', error);
+                    connectionStatus.textContent = 'Cannot connect to server. Please check your network or try HTTP/HTTPS.';
+                    connectionStatus.className = 'text-center mb-3 small text-danger';
+                    // Show troubleshooting options
+                    troubleshootingOptions.classList.remove('d-none');
+                }
+            }
+
+            // Toggle between HTTP and HTTPS
+            if (toggleProtocolBtn) {
+                toggleProtocolBtn.addEventListener('click', function() {
+                    const currentUrl = API_BASE_URL;
+                    let newUrl;
+
+                    if (currentUrl.startsWith('https://')) {
+                        newUrl = currentUrl.replace('https://', 'http://');
+                        toggleProtocolBtn.textContent = 'Try HTTPS';
+                    } else {
+                        newUrl = currentUrl.replace('http://', 'https://');
+                        toggleProtocolBtn.textContent = 'Try HTTP';
+                    }
+
+                    // Update the URL in localStorage for this session
+                    localStorage.setItem('tempApiBaseUrl', newUrl);
+
+                    // Show the new URL
+                    connectionStatus.textContent = 'Trying: ' + newUrl;
+                    connectionStatus.className = 'text-center mb-3 small text-info';
+
+                    // Reload the page to apply the change
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                });
+            }
+
+            // Clear browser cache
+            if (clearCacheBtn) {
+                clearCacheBtn.addEventListener('click', function() {
+                    // Clear localStorage
+                    localStorage.clear();
+
+                    // Clear session storage
+                    sessionStorage.clear();
+
+                    // Clear cookies (this is a simple approach, might not clear all cookies)
+                    document.cookie.split(";").forEach(function(c) {
+                        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                    });
+
+                    connectionStatus.textContent = 'Cache cleared. Reloading...';
+                    connectionStatus.className = 'text-center mb-3 small text-info';
+
+                    // Reload the page with cache bypass
+                    setTimeout(() => {
+                        window.location.reload(true);
+                    }, 1000);
+                });
+            }
+
+            // Check if we have a temporary API URL from protocol toggle
+            const tempApiBaseUrl = localStorage.getItem('tempApiBaseUrl');
+            if (tempApiBaseUrl) {
+                // Override the API_BASE_URL for this session
+                window.API_BASE_URL = tempApiBaseUrl;
+
+                // Update the API endpoints
+                window.API_ENDPOINTS = {
+                    LOGIN: `${tempApiBaseUrl}/Account/Account/LogIn`,
+                    REFRESH_TOKEN: `${tempApiBaseUrl}/Account/Account/LogIn`,
+                    GET_ALL_USERS: `${tempApiBaseUrl}/Admin/Admin/GetAllUsers`,
+                    CREATE_USER: `${tempApiBaseUrl}/Admin/Admin/CreateUserWithRole`,
+                    ASSIGN_ROLE: `${tempApiBaseUrl}/Admin/Admin/AssignRoleToUser`
+                };
+
+                // Update button text
+                if (toggleProtocolBtn) {
+                    toggleProtocolBtn.textContent = tempApiBaseUrl.startsWith('https://') ? 'Try HTTP' : 'Try HTTPS';
+                }
+            }
+
+            // Run the connection check
+            checkApiConnection();
+        });
+    </script>
+</body>
+</html>
